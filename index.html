@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BOSS线上办公求职助手</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <span class="brand-mark">B</span>
+          <div>
+            <h1>BOSS线上办公求职助手</h1>
+            <p>岗位筛选 / 风险识别 / 沟通话术</p>
+          </div>
+        </div>
+
+        <section class="profile">
+          <h2>默认求职画像</h2>
+          <dl>
+            <div><dt>学历</dt><dd>大专</dd></div>
+            <div><dt>专业</dt><dd>跨境电子商务</dd></div>
+            <div><dt>目标</dt><dd>线上 / 远程 / 居家 / 弹性</dd></div>
+            <div><dt>城市</dt><dd>武汉优先，远程不限</dd></div>
+          </dl>
+        </section>
+
+        <section class="guardrail">
+          <h2>安全边界</h2>
+          <p>只生成草稿和记录，不自动登录、不绕过验证码、不自动发送。</p>
+        </section>
+      </aside>
+
+      <section class="workspace">
+        <nav class="tabs" aria-label="功能切换">
+          <button class="tab active" data-tab="analyze">岗位分析</button>
+          <button class="tab" data-tab="reply">HR回复</button>
+          <button class="tab" data-tab="records">投递记录</button>
+          <button class="tab" data-tab="keywords">搜索关键词</button>
+          <button class="tab" data-tab="learning">实战学习</button>
+        </nav>
+
+        <section class="panel active" id="panel-analyze">
+          <div class="grid two">
+            <label>岗位名称<input id="jobTitle" placeholder="远程电商运营助理" /></label>
+            <label>公司名称<input id="company" placeholder="可不填" /></label>
+            <label>城市<input id="city" placeholder="武汉 / 远程 / 不限" /></label>
+            <label>薪资<input id="salary" placeholder="3-5K / 面议" /></label>
+            <label>办公方式
+              <select id="workMode">
+                <option>未说明</option>
+                <option>线上办公</option>
+                <option>远程办公</option>
+                <option>居家办公</option>
+                <option>弹性办公</option>
+                <option>线下办公</option>
+              </select>
+            </label>
+            <label>岗位链接<input id="jobLink" placeholder="手动粘贴链接，可不填" /></label>
+          </div>
+          <label class="full">岗位描述<textarea id="description" placeholder="粘贴岗位职责、任职要求、薪资说明"></textarea></label>
+          <div class="actions">
+            <button id="analyzeBtn" class="primary">分析岗位并生成话术</button>
+            <button id="saveBtn">保存到投递记录</button>
+          </div>
+
+          <section id="result" class="result hidden"></section>
+        </section>
+
+        <section class="panel" id="panel-reply">
+          <div class="grid two">
+            <label>HR消息类型
+              <select id="replyType">
+                <option>要简历</option>
+                <option>问经验</option>
+                <option>问薪资</option>
+                <option>问到岗时间</option>
+                <option>约面试</option>
+                <option>问作品</option>
+                <option>让加微信</option>
+                <option>问是否接受线下</option>
+                <option>问是否长期做</option>
+                <option>拒绝或不合适</option>
+                <option>可疑内容</option>
+                <option>通用回复</option>
+              </select>
+            </label>
+            <label>相关岗位<input id="replyJob" placeholder="远程运营助理" /></label>
+          </div>
+          <label class="full">HR原话<textarea id="hrMessage" placeholder="可不填"></textarea></label>
+          <div class="actions">
+            <button id="replyBtn" class="primary">生成回复</button>
+            <button id="copyReplyBtn">复制回复</button>
+          </div>
+          <pre id="replyOutput" class="message-box"></pre>
+        </section>
+
+        <section class="panel" id="panel-records">
+          <div class="actions">
+            <button id="exportBtn" class="primary">导出CSV</button>
+            <button id="clearBtn">清空本机记录</button>
+          </div>
+          <div class="table-wrap">
+            <table id="recordsTable">
+              <thead>
+                <tr>
+                  <th>岗位</th>
+                  <th>城市</th>
+                  <th>薪资</th>
+                  <th>分数</th>
+                  <th>等级</th>
+                  <th>状态</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="panel" id="panel-keywords">
+          <div class="keyword-list" id="keywordList"></div>
+        </section>
+
+        <section class="panel" id="panel-learning">
+          <div class="learning-hero">
+            <div>
+              <span class="eyebrow">LEARN BY SHIPPING</span>
+              <h2>先做作品，再用真实反馈决定学什么</h2>
+              <p>学习成果只保存在当前手机浏览器，不上传账号、岗位或个人记录。</p>
+            </div>
+            <span class="privacy-badge">本机私密保存</span>
+          </div>
+
+          <div class="learning-stats">
+            <div class="metric">岗位记录<strong id="learningJobCount">0</strong></div>
+            <div class="metric">完成成果<strong id="learningLogCount">0</strong></div>
+            <div class="metric">实战投入<strong id="learningMinutes">0 分钟</strong></div>
+          </div>
+
+          <div class="learning-plan-head">
+            <label>今天主攻方向
+              <select id="learningFocus"></select>
+            </label>
+            <div>
+              <strong id="learningSource"></strong>
+              <p id="learningReason"></p>
+            </div>
+          </div>
+
+          <div id="learningTasks" class="learning-tasks"></div>
+
+          <section class="learning-checkin">
+            <h3>保存本次成果</h3>
+            <div class="grid two">
+              <label>完成的任务<select id="learningTaskSelect"></select></label>
+              <label>实际投入分钟<input id="learningTaskMinutes" type="number" min="1" max="600" step="5" /></label>
+            </div>
+            <label class="full">成果证据
+              <textarea id="learningEvidence" placeholder="填写文件路径、链接、完成内容或真实反馈。只写“学完了”不算成果。"></textarea>
+            </label>
+            <div class="actions">
+              <button id="saveLearningBtn" class="primary">保存实战成果</button>
+              <button id="exportLearningBtn">导出学习记录</button>
+            </div>
+          </section>
+
+          <section class="learning-history">
+            <h3>最近成果</h3>
+            <div id="learningHistory" class="history-list"></div>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <script src="assets/app.js"></script>
+    <script src="assets/learning.js"></script>
+  </body>
+</html>
+
