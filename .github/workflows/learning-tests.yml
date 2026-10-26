@@ -1,0 +1,60 @@
+name: Learning center tests
+on:
+  push:
+    branches: [main, "feature/**"]
+    paths:
+      - "assets/learning.js"
+      - "assets/styles.css"
+      - "index.html"
+      - "tests/**"
+      - ".github/workflows/learning-tests.yml"
+  pull_request:
+    paths:
+      - "assets/learning.js"
+      - "assets/styles.css"
+      - "index.html"
+      - "tests/**"
+      - ".github/workflows/learning-tests.yml"
+permissions:
+  contents: read
+jobs:
+  node-regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Syntax validation
+        run: node --check assets/learning.js && node --check assets/app.js
+      - name: Learning and persistence regression
+        run: node --test tests/learning.test.cjs
+  mobile-chromium:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Chromium mobile browser smoke test (390px viewport)
+        shell: bash
+        run: |
+          set -euo pipefail
+          chrome="$(command -v google-chrome || command -v chromium || true)"
+          if [ -z "$chrome" ]; then
+            echo "Chromium/Chrome not available on runner"
+            exit 1
+          fi
+          python3 -m http.server 8765 --bind 127.0.0.1 >/tmp/cad-learning-http.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" || true' EXIT
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:8765/index.html >/dev/null; then break; fi
+            sleep 1
+          done
+          "$chrome" --headless=new --no-sandbox --disable-dev-shm-usage --disable-gpu \
+            --window-size=390,844 --virtual-time-budget=12000 --dump-dom \
+            http://127.0.0.1:8765/tests/browser-smoke.html >/tmp/cad-browser-output.html 2>/tmp/cad-browser-stderr.log
+          if ! grep -q 'data-result="PASS"' /tmp/cad-browser-output.html; then
+            cat /tmp/cad-browser-output.html | grep -E 'data-result=|PASS:|FAIL:' || true
+            cat /tmp/cad-browser-stderr.log | tail -n 50 || true
+            exit 1
+          fi
+          grep 'data-result="PASS"' /tmp/cad-browser-output.html
