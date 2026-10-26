@@ -193,7 +193,9 @@ test("保留原CSV表头、正确转义逗号和引号，并包含CAD新数据",
   app.$("exportLearningBtn").trigger("click");
   assert.equal(app.downloads(), 1);
   const csv = await app.blob().text();
-  assert.ok(csv.startsWith("\ufeff学习方向,任务,成果证据,分钟,完成时间"));
+  const fileBytes = Buffer.from(await app.blob().arrayBuffer());
+  assert.equal(fileBytes.subarray(0, 3).toString("hex"), "efbbbf"); // Excel可识别的UTF-8 BOM
+  assert.ok(csv.replace(/^\ufeff/, "").startsWith("学习方向,任务,成果证据,分钟,完成时间"));
   assert.match(csv, /CAD 室内平面制图/);
   assert.match(csv, /"a,""b"""/);
   assert.match(csv, /"C:\/work\/""cad"".dwg"/);
