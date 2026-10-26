@@ -351,3 +351,99 @@ th {
   .actions button { flex: 1 1 150px; }
 }
 
+
+
+/* CAD 实战任务：逐项展开，保留原七个方向的卡片样式 */
+.learning-progress {
+  padding: 16px;
+  border: 1px solid #bfd4f6;
+  border-radius: 10px;
+  background: #f4f8ff;
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+.learning-progress strong { color: #163f80; font-size: 16px; }
+.learning-progress > span, .learning-progress p { color: #49617e; line-height: 1.6; }
+.learning-progress p { margin: 0; overflow-wrap: anywhere; }
+.learning-progress-bar {
+  height: 10px;
+  overflow: hidden;
+  border-radius: 20px;
+  background: #dbeafe;
+}
+.learning-progress-bar > span {
+  display: block;
+  height: 100%;
+  background: #2563eb;
+  border-radius: inherit;
+  transition: width .2s ease;
+}
+.learning-stage-heading {
+  margin: 15px 0 0;
+  padding: 0 4px;
+  font-size: 16px;
+  color: #243c5f;
+}
+.cad-task {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  min-width: 0;
+  overflow: hidden;
+}
+.cad-task[open] { border-color: #a9c6f4; }
+.cad-task.is-complete { background: #f8fbff; }
+.cad-task > summary {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) auto auto;
+  gap: 12px;
+  align-items: center;
+  min-height: 58px;
+  padding: 13px 14px;
+  cursor: pointer;
+  list-style: none;
+}
+.cad-task > summary::-webkit-details-marker { display: none; }
+.cad-task > summary:focus-visible { outline: 3px solid #93c5fd; outline-offset: -3px; }
+.cad-task-index { color: #7890b1; font-weight: 800; font-variant-numeric: tabular-nums; }
+.cad-task-name { font-weight: 700; overflow-wrap: anywhere; }
+.cad-task-time, .cad-task-status { white-space: nowrap; color: var(--muted); font-size: 12px; }
+.cad-task.is-complete .cad-task-status { color: var(--green); }
+.cad-task-body {
+  display: grid;
+  gap: 12px;
+  padding: 0 16px 16px 64px;
+}
+.cad-task-body > p { margin: 0; line-height: 1.75; overflow-wrap: anywhere; }
+.cad-task-body > p strong { color: var(--ink); }
+.cad-task-body .deliverable, .cad-acceptance { overflow-wrap: anywhere; }
+.cad-acceptance {
+  padding: 10px 12px;
+  border-left: 3px solid #16803a;
+  border-radius: 3px;
+  background: #f0fdf4;
+  line-height: 1.75;
+}
+.cad-acceptance strong { margin-right: 8px; color: #166534; }
+.cad-pick-task {
+  justify-self: start;
+  border-color: #b1c9f2;
+  color: #1d4ed8;
+  background: #eff6ff;
+}
+.cad-pick-task:hover { border-color: var(--blue); }
+
+@media (max-width: 600px) {
+  .cad-task > summary {
+    grid-template-columns: 26px minmax(0, 1fr) auto;
+    column-gap: 9px;
+    row-gap: 5px;
+    padding: 13px 12px;
+  }
+  .cad-task-time { grid-column: 2 / 3; grid-row: 2; }
+  .cad-task-status { grid-column: 3; grid-row: 1; }
+  .cad-task-body { padding: 0 12px 14px; }
+  .cad-pick-task { width: 100%; min-height: 44px; }
+  .learning-progress { padding: 13px; }
+}
