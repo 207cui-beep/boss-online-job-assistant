@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>学习中心：手机浏览器回归检查</title>
+  <style>
+    html, body { margin:0; width:100%; font-family:system-ui,sans-serif; }
+    #report { display:block; padding:8px; font-size:13px; overflow-wrap:anywhere; }
+    #frame { display:block; width:100%; min-height:650px; border:0; }
+  </style>
+</head>
+<body>
+  <div id="report" data-result="WAIT">正在执行手机端交互测试</div>
+  <iframe id="frame" title="CAD学习中心真实页面"></iframe>
+  <script>
+    (async function () {
+      const report = document.getElementById("report");
+      const frame = document.getElementById("frame");
+      const checks = [];
+      function assert(condition, name) {
+        if (!condition) throw new Error(name);
+        checks.push(name);
+      }
+      function load() {
+        return new Promise((resolve) => {
+          frame.addEventListener("load", resolve, { once: true });
+          frame.src = "../index.html?browser-smoke=" + String(Math.random()).slice(2);
+        });
+      }
+      const older = { focus:"AI＋跨境电商内容执行", task:"拆一份真实商品需求",
+        evidence:"旧记录仍在", minutes:30, time:"2026-10-26 08:00" };
+      for (const key of ["bossLearningLogs", "bossLearningSelectedFocus", "bossLearningSelectedTasks"])
+        localStorage.removeItem(key);
+      localStorage.setItem("bossLearningLogs", JSON.stringify([older]));
+      await load();
+      let win = frame.contentWindow;
+      win.alert = function () {};
+      let doc = win.document;
+      doc.querySelector('[data-tab="learning"]').click();
+      const focus = doc.getElementById("learningFocus");
+      assert(focus.options.length === 8, "原7方向和CAD共8个");
+      focus.value = "CAD 室内平面制图";
+      focus.dispatchEvent(new Event("change", { bubbles:true }));
+      assert(doc.querySelectorAll(".cad-task").length === 24, "CAD的24个可展开任务");
+      assert(doc.querySelectorAll(".cad-task[open]").length === 1, "只有当前任务默认展开");
+      assert(doc.getElementById("learningTasks").textContent.includes("3600×3000mm"), "第一间房尺寸说明");
+      const selector = doc.getElementById("learningTaskSelect");
+      selector.value = selector.options[1].value;
+      selector.dispatchEvent(new Event("change", { bubbles:true }));
+      assert(doc.getElementById("learningTaskSelect").selectedIndex === 1, "切换任务成功");
+      doc.getElementById("learningTaskMinutes").value = "90";
+      doc.getElementById("learningEvidence").value = "C:/CAD/CAD02_命令练习.dwg";
+      doc.getElementById("saveLearningBtn").click();
+      assert(JSON.parse(localStorage.getItem("bossLearningLogs")).length === 2, "保存后不覆盖历史");
+      assert(doc.getElementById("learningMinutes").textContent === "120 分钟", "累计时间正确");
+      await load();
+      win = frame.contentWindow;
+      win.alert = function () {};
+      doc = win.document;
+      doc.querySelector('[data-tab="learning"]').click();
+      assert(doc.getElementById("learningFocus").value === "CAD 室内平面制图", "刷新后方向恢复");
+      assert(doc.getElementById("learningLogCount").textContent === "2", "刷新后记录恢复");
+      assert(doc.getElementById("learningHistory").textContent.includes("旧记录仍在"), "旧记录可读");
+      assert(doc.getElementById("learningHistory").textContent.includes("CAD02_命令练习.dwg"), "新记录可读");
+      const summary = doc.querySelector(".cad-task summary");
+      const layout = win.getComputedStyle(summary);
+      assert(layout.display === "grid", "手机端任务摘要网格显示");
+      assert(doc.documentElement.scrollWidth <= doc.documentElement.clientWidth + 2,
+        "手机端页面无水平溢出");
+      assert(summary.getBoundingClientRect().right <= win.innerWidth + 2, "任务卡片完整显示");
+      report.dataset.result = "PASS";
+      report.textContent = "PASS: " + checks.length + " 项手机端真实浏览器测试通过：" + checks.join("；");
+    })().catch(function (error) {
+      const report = document.getElementById("report");
+      report.dataset.result = "FAIL";
+      report.textContent = "FAIL: " + error.message;
+    });
+  </script>
+</body>
+</html>
